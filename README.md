@@ -4,16 +4,35 @@ This project is a simple implementation of **Conway's Game of Life** with a grap
 
 ---
 
+## Get a local copy
+
+You can clone this project from GitHub:
+
+```bash
+git clone git@github.com:ssriblo/cursor_test_life_game_python.git
+cd cursor_test_life_game_python
+```
+
+If you prefer HTTPS:
+
+```bash
+git clone https://github.com/ssriblo/cursor_test_life_game_python.git
+cd cursor_test_life_game_python
+```
+
+Make sure you have **Python 3** installed on your system.
+
+---
+
 ## How to run
 
-1. Make sure you have Python 3 installed.
-2. From the project folder, run:
+From the project folder, run:
 
    ```bash
    python lifeGame.py
    ```
 
-The window will open with an empty grid.
+The window will open with an empty grid. Use your mouse to draw an initial pattern, then press **Start** to run the simulation.
 
 ---
 
