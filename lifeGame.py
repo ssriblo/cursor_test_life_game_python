@@ -104,17 +104,24 @@ class GameOfLife:
         )
         self.random_button.pack(side=tk.LEFT, padx=2)
 
+        # Preset patterns
+        self.glider_button = ttk.Button(controls, text="Glider", command=self.add_glider)
+        self.glider_button.pack(side=tk.LEFT, padx=2)
+
+        self.pulsar_button = ttk.Button(controls, text="Pulsar", command=self.add_pulsar)
+        self.pulsar_button.pack(side=tk.LEFT, padx=2)
+
         # Speed control
         speed_frame = ttk.Frame(controls)
         speed_frame.pack(side=tk.LEFT, padx=10)
 
         ttk.Label(speed_frame, text="Speed").pack(side=tk.TOP)
 
-        # Scale: lower delay (faster) to higher delay (slower)
+        # Scale: higher value = faster (smaller delay)
         self.speed_scale = ttk.Scale(
             speed_frame,
-            from_=10,      # very fast
-            to=500,        # very slow
+            from_=500,      # very slow (left)
+            to=10,          # very fast (right)
             orient=tk.HORIZONTAL,
             command=self.on_speed_change,
         )
@@ -184,6 +191,60 @@ class GameOfLife:
             self.delay_ms = int(float(value))
         except ValueError:
             self.delay_ms = DEFAULT_DELAY_MS
+
+    # ---- Patterns ----
+    def apply_pattern(self, pattern_cells, offset_row, offset_col):
+        for dr, dc in pattern_cells:
+            r = offset_row + dr
+            c = offset_col + dc
+            if 0 <= r < self.rows and 0 <= c < self.cols:
+                self.grid[r][c] = True
+        self.draw_grid()
+
+    def add_glider(self):
+        # Classic glider pattern (relative coordinates)
+        glider = [
+            (0, 1),
+            (1, 2),
+            (2, 0), (2, 1), (2, 2),
+        ]
+        center_row = self.rows // 2
+        center_col = self.cols // 2
+        origin_row = center_row - 1
+        origin_col = center_col - 1
+        self.apply_pattern(glider, origin_row, origin_col)
+
+    def add_pulsar(self):
+        # Classic pulsar oscillator (period 3), radius 6 (13x13 bounding box)
+        base_offsets = [
+            (0, 2), (0, 3), (0, 4),
+            (0, 8), (0, 9), (0, 10),
+            (2, 0), (3, 0), (4, 0),
+            (2, 5), (3, 5), (4, 5),
+            (2, 7), (3, 7), (4, 7),
+            (2, 12), (3, 12), (4, 12),
+            (5, 2), (5, 3), (5, 4),
+            (5, 8), (5, 9), (5, 10),
+            (7, 2), (7, 3), (7, 4),
+            (7, 8), (7, 9), (7, 10),
+            (8, 0), (9, 0), (10, 0),
+            (8, 5), (9, 5), (10, 5),
+            (8, 7), (9, 7), (10, 7),
+            (8, 12), (9, 12), (10, 12),
+            (12, 2), (12, 3), (12, 4),
+            (12, 8), (12, 9), (12, 10),
+        ]
+        # Normalize pattern so minimum row/col is 0
+        min_r = min(r for r, _ in base_offsets)
+        min_c = min(c for _, c in base_offsets)
+        pattern = [(r - min_r, c - min_c) for r, c in base_offsets]
+
+        center_row = self.rows // 2
+        center_col = self.cols // 2
+        # Pulsar is 13x13, origin is center - 6
+        origin_row = center_row - 6
+        origin_col = center_col - 6
+        self.apply_pattern(pattern, origin_row, origin_col)
 
     def start(self):
         if not self.running:
